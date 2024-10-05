@@ -43,7 +43,6 @@ def scrape():
 
     # Close the browser
     driver.quit()
-    print(table_html)
     return jsonify({"table": table_html})
 
 if __name__ == '__main__':
