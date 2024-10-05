@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNR Status Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049; /* Darker green */
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Loader Styles */
+        .loader {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #4CAF50; /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto; /* Center the loader */
+            display: none; /* Initially hidden */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Check PNR Status</h1>
+    <button onclick="getPnrStatus()">Get PNR Status</button>
+    <div id="loader" class="loader"></div> <!-- Loader div -->
+    <div id="result"></div>
+
+    <script>
+        // Fixed PNR number
+        const fixedPnr = "6142561746"; // Replace with your fixed PNR number
+
+        async function getPnrStatus() {
+            // Show loader
+            document.getElementById('loader').style.display = 'block';
+
+            const response = await fetch(`/scrape?pnr=${fixedPnr}`);
+            const data = await response.json();
+
+            // Hide loader
+            document.getElementById('loader').style.display = 'none';
+
+            if (data.error) {
+                document.getElementById('result').innerText = "Error fetching data: " + data.error;
+                return;
+            }
+
+            displayResult(data.table);
+        }
+
+        function displayResult(tableHtml) {
+            // Create a new div element for the result
+            const resultDiv = document.getElementById('result');
+
+            // Clear previous results
+            resultDiv.innerHTML = "";
+
+            // Create a table element
+            const table = document.createElement('table');
+            table.innerHTML = tableHtml; // Set the innerHTML to the received table HTML
+
+            // Append the table to the result div
+            resultDiv.appendChild(table);
+        }
+    </script>
+</body>
+</html>
